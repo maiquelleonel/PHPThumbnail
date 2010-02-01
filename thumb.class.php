@@ -3,9 +3,9 @@
  * Cria thumbnails das imagens configuradas na pasta corrente
  * @author Maiquel Leonel <skywishmtfk@gmail.com>
  * @package PHPThumbnail
- * @since 01:59 24/3/2009
- * @dependens php-gd
- * @version 0.1.0
+ * @since 03:22 01/02/2010
+ * @dependencies php-gd
+ * @version 2.0
  */
 class Thumb{
 	private $t = array('old_w' => 0,'old_h' => 0,'new_w' => 0,'new_h' => 0);
@@ -13,7 +13,7 @@ class Thumb{
 	private $arquivo;
 	private $caminho; 
 	/**
-	 * pré configura os tipos aceitos e as funções corresponmdentes
+	 * pré configura os tipos aceitos e as funcoes corresponmdentes
 	 */
 	private $tipos = array( 'jpg' => array('imagecreatefromjpeg','imagejpeg'),
 									'jpeg'=> array('imagecreatefromjpeg','imagejpeg'),
@@ -21,11 +21,11 @@ class Thumb{
 									'png' => array('imagecreatefrompng' ,'imagepng'),
 						);
 	/**
-	 * Funcao construtora executa os métodos na chamada
+	 * Funcao construtora executa os metodos na chamada
 	 * @param [string] $arquivo o caminho para o arquivo
-	 * @param [array] $novos_tamanhos  array com os tamanhos máximos 
-	 * 									o primeiro elemento é a largura
-	 * 									o segundo elemento é a altura
+	 * @param [array] $novos_tamanhos  array com os tamanhos maximos 
+	 * 									o primeiro elemento a a largura
+	 * 									o segundo elemento a a altura
 	 * @return void
 	 */
 	public function __construct($arquivo, $novos_tamanhos,$caminho_para_salvar=""){
@@ -41,7 +41,7 @@ class Thumb{
 		$this->redimensiona();
 	}
 	/**
-	 * Método que calcula os tamanho proporcional com base na imagem
+	 * Metodo que calcula os tamanho proporcional com base na imagem
 	 * @return void
 	 */
 	private function define_tamanhos(){
@@ -68,7 +68,7 @@ class Thumb{
 		//se é um tipo aceito
 		if(array_key_exists(strtolower($this->type['extension']),$this->tipos)):
 			$this->define_tamanhos();
-			//cria o arquivo de destino 
+			//cria o arquivo de destino de referencia
 			$dst = imagecreatetruecolor($this->t['new_w'], $this->t['new_h']);
 			// cria uma cópia da imagem
 			$src = $this->tipos[strtolower($this->type['extension'])][0]($this->caminho.$this->arquivo);
@@ -81,11 +81,11 @@ class Thumb{
 		endif;
 	}
 	/**
-	 * Metodo estático que retira o nome do arquivo
+	 * Metodo estatico que retira o nome do arquivo
 	 * @param [array] $aquivo normalmente o $_FILES['nome-do-campo-no-form']
 	 * @param [string] $nome o nome que se quer dar ao arquivo
-	 *									em caso de omissão será setado o timestamp do momento
-	 * @return [string] o nome "unico" para o arquivo com sua extensão correta
+	 *									em caso de omissao sera setado o timestamp do momento
+	 * @return [string] o nome "unico" para o arquivo com sua extensao correta
 	 */
 	public static function nomeia(array $arquivo,$nome=false){
 		if(!$nome):
@@ -95,8 +95,8 @@ class Thumb{
 		$pattern = array('bug-do-IE' => '/(pjpeg)|(pjpg)/',
 								'correcao-IE' => '/\/p/',
 								'extensao' => '/(image\/)/'
-					);	
-		//verifica se veio do IEca com bug...			
+					);
+		//verifica se veio do IEca com bug...
 		if(preg_match($pattern['bug-do-ie'],$arquivo['type'])):
 			//retiro o char errado
 			$arquivo['type'] = preg_replace($pattern['correcao-IE'],'/',$arquivo['type']);
@@ -107,10 +107,10 @@ class Thumb{
 		return $nome.'.'.$extensao;
 	}
 	/**
-	 * Método estatico que move o arquivo para a pasta correta
-	 * renomeando conforme o necessário 
+	 * Metodo estatico que move o arquivo para a pasta correta
+	 * renomeando conforme o necessario 
 	 * @param [array] $arquivo  normalmente o $_FILES['nome-do-campo-no-form']
-	 * @param [string] $caminho_para_arquivo  geralmente passado pelo método 
+	 * @param [string] $caminho_para_arquivo  geralmente filtrado pelo metodo 
 	 * 											     Thumb::nomeia antes
 	 * @return [bool] true caso consiga efetuar o upload.
 	 */
