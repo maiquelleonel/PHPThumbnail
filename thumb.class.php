@@ -33,7 +33,7 @@ class Thumb{
 		$this->arquivo = $arquivo;
 		//seta o caminho pra salvar..
 		$this->caminho = $caminho_para_salvar;
-		//pega informações sobre o arquivo..
+		//pega informaï¿½ï¿½es sobre o arquivo..
 		$this->type = pathinfo($this->arquivo);
 		//seta os tamanhos maximos
 		$this->max = array('w' => $novos_tamanhos[0],'h' => $novos_tamanhos[1]);
@@ -65,14 +65,14 @@ class Thumb{
 	 * @return void;
 	 */
 	private function redimensiona(){
-		//se é um tipo aceito
+		//se ï¿½ um tipo aceito
 		if(array_key_exists(strtolower($this->type['extension']),$this->tipos)):
 			$this->define_tamanhos();
 			//cria o arquivo de destino de referencia
 			$dst = imagecreatetruecolor($this->t['new_w'], $this->t['new_h']);
-			// cria uma cópia da imagem
+			// cria uma cï¿½pia da imagem
 			$src = $this->tipos[strtolower($this->type['extension'])][0]($this->caminho.$this->arquivo);
-			// redimensiona a cópia
+			// redimensiona a cï¿½pia
 			imagecopyresampled($dst, $src, 0, 0, 0, 0,$this->t['new_w'],$this->t['new_h'],$this->t['old_w'],$this->t['old_h']);
 			// salva a nova imagem no caminho correto
 			$this->tipos[strtolower($this->type['extension'])][1]($dst,$this->caminho.$this->arquivo); 
@@ -118,4 +118,4 @@ class Thumb{
 		return move_uploaded_file($arquivo['tmp_name'],$caminho_para_arquivo);
 	}
 }
-?>
+
