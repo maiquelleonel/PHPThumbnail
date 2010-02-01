@@ -15,7 +15,7 @@ class Thumb{
    /**
     * pre configura os tipos aceitos e as funcoes corresponmdentes
     */
-   private $tipos = array( 'jpg' => array('imagecreatefromjpeg','imagejpeg'),
+   private $tipos = array('jpg' => array('imagecreatefromjpeg','imagejpeg'),
                            'jpeg'=> array('imagecreatefromjpeg','imagejpeg'),
                            'gif' => array('imagecreatefromgif' ,'imagegif'),
                            'png' => array('imagecreatefrompng' ,'imagepng'),
@@ -33,7 +33,7 @@ class Thumb{
       $this->arquivo = $arquivo;
       //seta o caminho pra salvar..
       $this->caminho = $caminho_para_salvar;
-      //pega informa��es sobre o arquivo..
+      //pega informacoes sobre o arquivo..
       $this->type = pathinfo($this->arquivo);
       //seta os tamanhos maximos
       $this->max = array('w' => $novos_tamanhos[0],'h' => $novos_tamanhos[1]);
@@ -65,14 +65,14 @@ class Thumb{
     * @return void;
     */
    private function redimensiona(){
-      //se � um tipo aceito
+      //se eh um tipo aceito
       if(array_key_exists(strtolower($this->type['extension']),$this->tipos)):
          $this->define_tamanhos();
          //cria o arquivo de destino de referencia
          $dst = imagecreatetruecolor($this->t['new_w'], $this->t['new_h']);
-         // cria uma c�pia da imagem
+         // cria uma copia da imagem
          $src = $this->tipos[strtolower($this->type['extension'])][0]($this->caminho.$this->arquivo);
-         // redimensiona a c�pia
+         // redimensiona a copia
          imagecopyresampled($dst, $src, 0, 0, 0, 0,$this->t['new_w'],$this->t['new_h'],$this->t['old_w'],$this->t['old_h']);
          // salva a nova imagem no caminho correto
          $this->tipos[strtolower($this->type['extension'])][1]($dst,$this->caminho.$this->arquivo); 
