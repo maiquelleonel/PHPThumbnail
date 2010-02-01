@@ -13,7 +13,7 @@ class Thumb{
 	private $arquivo;
 	private $caminho; 
 	/**
-	 * pré configura os tipos aceitos e as funcoes corresponmdentes
+	 * pre configura os tipos aceitos e as funcoes corresponmdentes
 	 */
 	private $tipos = array( 'jpg' => array('imagecreatefromjpeg','imagejpeg'),
 									'jpeg'=> array('imagecreatefromjpeg','imagejpeg'),
