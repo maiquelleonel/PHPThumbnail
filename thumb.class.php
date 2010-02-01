@@ -92,8 +92,8 @@ class Thumb{
 			$nome = time();
 		endif;
 		//seta os patterns
-		$pattern = array('bug-do-IE' => '/(pjpeg)|(pjpg)/',
-								'correcao-IE' => '/\/p/',
+		$pattern = array('bug-do-IE' => '/(pjpeg)|(pjpg)|(x-png)/',
+								'correcao-IE' => '/(\/p)|(\/x-)/',
 								'extensao' => '/(image\/)/'
 					);
 		//verifica se veio do IEca com bug...
