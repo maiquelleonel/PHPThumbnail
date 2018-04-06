@@ -7,79 +7,90 @@
  * @dependencies php-gd
  * @version 2.0
  */
-class Thumb{
+class Thumb {
+   
    private $t = array('old_w' => 0,'old_h' => 0,'new_w' => 0,'new_h' => 0);
    private $max;
-   private $arquivo;
-   private $caminho; 
+   private $file;
+   private $path; 
+   
    /**
     * pre configura os tipos aceitos e as funcoes corresponmdentes
     */
-   private $tipos = array('jpg' => array('imagecreatefromjpeg','imagejpeg'),
-                           'jpeg'=> array('imagecreatefromjpeg','imagejpeg'),
-                           'gif' => array('imagecreatefromgif' ,'imagegif'),
-                           'png' => array('imagecreatefrompng' ,'imagepng'),
-                  );
+   private $types = array(
+      'jpg' => array('make' => 'imagecreatefromjpeg', 'save' => 'imagejpeg'),
+      'jpeg'=> array('make' => 'imagecreatefromjpeg', 'save' => 'imagejpeg'),
+      'gif' => array('make' => 'imagecreatefromgif' , 'save' => 'imagegif'),
+      'png' => array('make' => 'imagecreatefrompng' , 'save' => 'imagepng'),
+   );
+   
    /**
     * Funcao construtora executa os metodos na chamada
-    * @param [string] $arquivo o caminho para o arquivo
-    * @param [array] $novos_tamanhos  array com os tamanhos maximos 
+    * @param [string] $file o caminho para o arquivo
+    * @param [array]  $new_sizes array com os tamanhos maximos 
     *                            o primeiro elemento a a largura
     *                            o segundo elemento a a altura
     * @return void
     */
-   public function __construct($arquivo, $novos_tamanhos,$caminho_para_salvar=""){
+   public function __construct($file, $new_sizes, $path="")
+   {
       //seta o arquivo
-      $this->arquivo = $arquivo;
+      $this->file = $file;
       //seta o caminho pra salvar..
-      $this->caminho = $caminho_para_salvar;
+      $this->path = $path;
       //pega informacoes sobre o arquivo..
-      $this->type = pathinfo($this->arquivo);
+      $this->type = pathinfo($this->file);
+      $this->type['extension'] = strtolower($this->type['extension']);
       //seta os tamanhos maximos
-      $this->max = array('w' => $novos_tamanhos[0],'h' => $novos_tamanhos[1]);
+      $this->max = array('w' => $new_sizes[0],'h' => $new_sizes[1]);
       //redimensiona e salva no diretorio dado
-      $this->redimensiona();
+      $this->resize();
    }
+   
    /**
     * Metodo que calcula os tamanho proporcional com base na imagem
     * @return void
     */
-   private function define_tamanhos(){
-      list($w,$h) = getimagesize($this->arquivo);
+   private function setSizes()
+   {
+      list($w, $h) = getimagesize($this->file);
       $prop = $w / $h;
       $this->t['new_h'] = $this->max['h'];
       $this->t['new_w'] = $this->max['w'];
       $this->t['old_w'] = $w;
       $this->t['old_h'] = $h;
-      if ($w > $this->max['w'] || $h > $this->max['h']):
+      if ($w > $this->max['w'] || $h > $this->max['h']) {
          $this->t['new_w'] = $this->max['w'];
          $this->t['new_h'] = $this->max['w'] / $prop;
-         if ($this->t['new_h'] > $this->max['h']):
+         if ($this->t['new_h'] > $this->max['h']) {
             $this->t['new_h'] = $this->max['h'];
             $this->t['new_w'] = $this->max['h'] * $prop;
-         endif;
-      endif;
+         }
+      }
    }
+   
    /**
-    * metodo responsavel por rediemensionar as imagens e salvar no diretorio corrente do script
+    * metodo responsavel por redimensionar as imagens e salvar no diretorio corrente do script
     * @return void;
     */
-   private function redimensiona(){
+   private function resize()
+   {
       //se eh um tipo aceito
-      if(array_key_exists(strtolower($this->type['extension']),$this->tipos)):
-         $this->define_tamanhos();
+      if (array_key_exists($this->type['extension'], $this->types)) {
+         $this->setSizes();
          //cria o arquivo de destino de referencia
          $dst = imagecreatetruecolor($this->t['new_w'], $this->t['new_h']);
          // cria uma copia da imagem
-         $src = $this->tipos[strtolower($this->type['extension'])][0]($this->caminho.$this->arquivo);
+         $src = $this->types[$this->type['extension']]['make']($this->path . $this->file);
          // redimensiona a copia
-         imagecopyresampled($dst, $src, 0, 0, 0, 0,$this->t['new_w'],$this->t['new_h'],$this->t['old_w'],$this->t['old_h']);
+         imagecopyresampled($dst, $src, 0, 0, 0, 0, $this->t['new_w'], $this->t['new_h'], $this->t['old_w'], $this->t['old_h']);
          // salva a nova imagem no caminho correto
-         $this->tipos[strtolower($this->type['extension'])][1]($dst,$this->caminho.$this->arquivo); 
+         $this->types[$this->type['extension']]['save']($dst, $this->path. $this->file); 
          //apaga o destino de referencia
          imagedestroy($dst);
-      endif;
+      }
    }
+   
    /**
     * Metodo estatico que retira o nome do arquivo
     * @param [array] $aquivo normalmente o $_FILES['nome-do-campo-no-form']
@@ -87,24 +98,26 @@ class Thumb{
     *                           em caso de omissao sera setado o timestamp do momento
     * @return [string] o nome "unico" para o arquivo com sua extensao correta
     */
-   public static function nomeia(array $arquivo,$nome=false){
-      if(!$nome):
-         $nome = time();
-      endif;
+   public static function getName(array $file, $name=false)
+   {
+      if (! $name) {
+         $name = time();
+      }
       //seta os patterns
-      $pattern = array('bug-do-IE' => '/(pjpeg)|(pjpg)|(x-png)/',
-                        'correcao-IE' => '/(\/p)|(\/x-)/',
-                        'extensao' => '/(image\/)/'
-               );
+      $pattern = array(
+          'IE-bug' => '/(pjpeg)|(pjpg)|(x-png)/',
+          'IE-fix' => '/(\/p)|(\/x-)/',
+          'ext'    => '/(image\/)/'
+      );
       //verifica se veio do IEca com bug...
-      if(preg_match($pattern['bug-do-ie'],$arquivo['type'])):
+      if (preg_match($pattern['IE-bug'], $file['type'])) {
          //retiro o char errado
-         $arquivo['type'] = preg_replace($pattern['correcao-IE'],'/',$arquivo['type']);
-      endif;
+         $file['type'] = preg_replace($pattern['IE-fix'], '/', $file['type']);
+      }
       //captura a extensao pelo mime-type do arquivo informado
-      $extensao = preg_replace($pattern['extensao'],'',$arquivo['type']);
+      $ext = preg_replace($pattern['ext'], '', $file['type']);
       //retorno unico para o arquivo
-      return $nome.'.'.$extensao;
+      return $name . '.' . $ext;
    }
    /**
     * Metodo estatico que move o arquivo para a pasta correta
@@ -114,8 +127,8 @@ class Thumb{
     *                                       Thumb::nomeia antes
     * @return [bool] true caso consiga efetuar o upload.
     */
-   public static function upload(array $arquivo,$caminho_para_arquivo){
-      return move_uploaded_file($arquivo['tmp_name'],$caminho_para_arquivo);
+   public static function upload(array $file, $new_path)
+   {
+      return move_uploaded_file($file['tmp_name'], $new_path);
    }
 }
-
