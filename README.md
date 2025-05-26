@@ -6,7 +6,7 @@ $pasta = '../images/flyers/';
 // armazeno a imagem...
 $arquivo = $_FILES['imagem'];
 
-$nome_arquivo = Thumb::nomeia($arquivo);
+$nome_arquivo = Thumb::getName($arquivo);
 
 if (Thumb::upload($arquivo,$pasta . $nome_arquivo)) {
     //crio o thumb configurando o tamanho
